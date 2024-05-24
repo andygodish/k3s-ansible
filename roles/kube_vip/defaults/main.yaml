@@ -1,0 +1,4 @@
+---
+apiserver_endpoint: "192.168.1.64"
+kube_vip_iface: ens18
+kube_vip_tag_version: v0.8.0
