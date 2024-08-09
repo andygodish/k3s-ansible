@@ -1,0 +1,46 @@
+---
+- name: k3s-requirements
+  hosts: all
+  become: true
+  tasks:
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Save package facts to a file
+      ansible.builtin.copy:
+        content: "{{ ansible_facts.packages | to_nice_json }}"
+        dest: "./package_facts.json"
+
+    - name: Disable and stop firewalld
+      ansible.builtin.systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+      when:
+        - ansible_facts.packages['firewalld'] is defined
+        - ansible_os_family == "RedHat"
+
+    - name: Disable and stop nm-cloud-setup.service
+      ansible.builtin.systemd:
+        name: nm-cloud-setup.service
+        state: stopped
+        enabled: no
+      register: service_result
+      when:
+        - "'NetworkManager-cloud-setup' in ansible_facts.packages"
+        - ansible_os_family == "RedHat"
+
+    - name: Disable and stop nm-cloud-setup.timer
+      ansible.builtin.systemd:
+        name: nm-cloud-setup.timer
+        state: stopped
+        enabled: no
+      register: timer_result
+      when:
+        - "'NetworkManager-cloud-setup' in ansible_facts.packages"
+        - ansible_os_family == "RedHat"
+
+    - name: Reboot the machine if changes occurred
+      ansible.builtin.reboot:
+      when: service_result.changed or timer_result.changed

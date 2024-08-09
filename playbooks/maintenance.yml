@@ -1,0 +1,30 @@
+---
+- name: Update and Reboot Rocky Linux 9 servers
+  hosts: k3s_cluster
+  become: yes
+  serial: 1  # Process one host at a time
+
+  tasks:
+    - name: Ensure all packages are up to date
+      ansible.builtin.yum:
+        name: '*'
+        state: latest
+        update_cache: yes
+    
+    - name: Ensure SELinux is in permissive mode permanently
+      ansible.builtin.replace:
+        path: /etc/selinux/config
+        regexp: '^SELINUX='
+        replace: 'SELINUX=permissive'
+
+    - name: Reboot the server
+      ansible.builtin.reboot:
+        reboot_timeout: 600  # Adjust this timeout as needed
+
+    - name: Wait for system to come back online
+      ansible.builtin.wait_for_connection:
+        timeout: 300  # Wait up to 5 minutes for the server to come back online
+
+    - name: Ensure additional wait time for k3s to come back online
+      ansible.builtin.pause:
+        seconds: 90  
