@@ -1,0 +1,24 @@
+---
+- name: Set permissions for PVC directory on all nodes
+  hosts: k3s_cluster  
+  become: true  
+
+  tasks:
+    - name: Ensure the directory exists
+      file:
+        path: /opt/local-path-provisioner
+        state: directory
+        mode: '0777'
+
+    - name: Set permissions to 777 for the PVC directory
+      ansible.builtin.command:
+        cmd: chmod -R 777 /opt/local-path-provisioner-rwx
+
+    - name: Verify permissions of the directory
+      ansible.builtin.command:
+        cmd: ls -ld /opt/local-path-provisioner
+      register: dir_listing
+
+    - name: Display directory permissions
+      debug:
+        msg: "{{ dir_listing.stdout }}"
