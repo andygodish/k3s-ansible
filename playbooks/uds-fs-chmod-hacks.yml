@@ -22,3 +22,15 @@
     - name: Display directory permissions
       debug:
         msg: "{{ dir_listing.stdout }}"
+
+    - name: Ensure the directory exists
+      file:
+        path: /var/loki
+        state: directory
+        mode: '0777'
+
+    - name: Set permissions to 777 for the PVC directory
+      ansible.builtin.command:
+        cmd: chmod -R 777 /var/loki
+
+    
