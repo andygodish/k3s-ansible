@@ -33,4 +33,16 @@
       ansible.builtin.command:
         cmd: chmod -R 777 /var/loki
 
+    - name: Ensure the loki compactor directory exists
+      file:
+        path: /var/loki/compactor
+        state: directory
+        mode: '0777'
+
+    - name: Ensure the boltdb-shipper-active directory exists
+      file:
+        path: /var/loki/boltdb-shipper-active
+        state: directory
+        mode: '0777'
+
     
