@@ -44,5 +44,11 @@
         path: /var/loki/boltdb-shipper-active
         state: directory
         mode: '0777'
+ 
+    - name: Ensure the /var/cache/nginx directory exists
+      file:
+        path: /var/cache/nginx
+        state: directory
+        mode: '0777'
 
     

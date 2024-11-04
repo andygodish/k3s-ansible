@@ -13,7 +13,7 @@
   become: true
   roles:
     - role: k3s_server
-    - role: kube_vip
+    # - role: kube_vip
 
 - name: Setup K3S agent
   hosts: agent

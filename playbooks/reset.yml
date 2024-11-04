@@ -38,6 +38,12 @@
         path: /opt/local-path-provisioner-rwx
         state: absent
       ignore_errors: yes
+    - name: Forcefully clear the existing container logs 
+      become: true
+      file:
+        path: /var/log/containers
+        state: absent
+      ignore_errors: yes
 
 - name: Undo user setup
   hosts: server
